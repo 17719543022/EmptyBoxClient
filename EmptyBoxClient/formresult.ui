@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormResult</class>
+ <widget class="QWidget" name="FormResult">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>250</width>
+    <height>120</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QLabel" name="PhotoLab">
+   <property name="geometry">
+    <rect>
+     <x>5</x>
+     <y>5</y>
+     <width>144</width>
+     <height>108</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-image: url(:/Images/photobg.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="camLab">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>27</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-family: &quot;Microsoft Yahei&quot;;font-size:13px;background:transparent;color:#00e4ff;</string>
+   </property>
+   <property name="text">
+    <string>位置:摄像头1</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="modeLab">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>49</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-family: &quot;Microsoft Yahei&quot;;font-size:13px;background:transparent;color:#00e4ff;</string>
+   </property>
+   <property name="text">
+    <string>模式:注册</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="timeLab">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>71</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-family: &quot;Microsoft Yahei&quot;;font-size:13px;background:transparent;color:#00e4ff;</string>
+   </property>
+   <property name="text">
+    <string>时间:12:20:39</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="resultLab">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>93</y>
+     <width>81</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-family: &quot;Microsoft Yahei&quot;;font-size:13px;background:transparent;color:#00e4ff;</string>
+   </property>
+   <property name="text">
+    <string>结果:成功</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="rfidLab">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>5</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">font-family: &quot;Microsoft Yahei&quot;;font-size:13px;background:transparent;color:#00e4ff;</string>
+   </property>
+   <property name="text">
+    <string>RFID号:FFFF</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

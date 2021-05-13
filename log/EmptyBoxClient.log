@@ -1,0 +1,37 @@
+2021-05-13 10:30:06,617 INFO  MainWindow::MainWindow(QWidget*) - "System Version:V1.0.0_EmptySDKV1.0.0_SVN0000_VideoSDKV2.0.0_SVN6906_/home/liuyong/EmptyBoxClient/build-EmptyBoxClient-Desktop_Qt_5_12_6_GCC_64bit-Debug"
+2021-05-13 10:30:06,618 INFO  int DetectEmptyBoxSer::Init() - "VideoProcessSer Init[0]->USB-Camera,,640,480,,version:2.0.0"
+2021-05-13 10:30:06,630 ERROR int VideoProcessSer::OnStartVideo() - stoi
+2021-05-13 10:30:06,630 ERROR int DetectEmptyBoxSer::Init() - "USB-Camera,,640,480, res:-1"
+2021-05-13 10:30:06,630 ERROR MainWindow::MainWindow(QWidget*) - "DetectEmptyBoxSer res:-1"
+2021-05-13 10:30:06,632 INFO  MainWindow::MainWindow(QWidget*) - "HttpClientSer res:0"
+2021-05-13 10:30:06,633 INFO  MainWindow::MainWindow(QWidget*) - "HttpServerSer res:0"
+2021-05-13 10:32:42,367 INFO  MainWindow::MainWindow(QWidget*) - "System Version:V1.0.0_EmptySDKV1.0.0_SVN0000_VideoSDKV2.0.0_SVN6906_/home/liuyong/EmptyBoxClient/build-EmptyBoxClient-Desktop_Qt_5_12_6_GCC_64bit-Debug"
+2021-05-13 10:32:42,367 INFO  int DetectEmptyBoxSer::Init() - "VideoProcessSer Init[0]->USB-Camera,0,640,480,15,version:2.0.0"
+2021-05-13 10:32:42,581 INFO  int VideoProcessSer::OnStartVideo() - "video decode start success，fileName-USB-Camera,0,640,480,15,ID-1"
+2021-05-13 10:32:42,581 INFO  MainWindow::MainWindow(QWidget*) - "DetectEmptyBoxSer res:0,version:V1.0.0"
+2021-05-13 10:32:42,583 INFO  MainWindow::MainWindow(QWidget*) - "HttpClientSer res:0"
+2021-05-13 10:32:42,583 INFO  MainWindow::MainWindow(QWidget*) - "HttpServerSer res:0"
+2021-05-13 10:32:42,709 WARN   - QObject::connect: Cannot queue arguments of type 'DevStatDisplay'
+(Make sure 'DevStatDisplay' is registered using qRegisterMetaType().)
+2021-05-13 10:38:08,005 INFO  MainWindow::MainWindow(QWidget*) - "System Version:V1.0.0_EmptySDKV1.0.0_SVN0000_VideoSDKV2.0.0_SVN6906_/home/liuyong/EmptyBoxClient/build-EmptyBoxClient-Desktop_Qt_5_12_6_GCC_64bit-Debug"
+2021-05-13 10:38:08,005 INFO  int DetectEmptyBoxSer::Init() - "VideoProcessSer Init[0]->USB-Camera,0,640,480,15,version:2.0.0"
+2021-05-13 10:38:08,124 INFO  int VideoProcessSer::OnStartVideo() - "video decode start success，fileName-USB-Camera,0,640,480,15,ID-1"
+2021-05-13 10:38:08,124 INFO  MainWindow::MainWindow(QWidget*) - "DetectEmptyBoxSer res:0,version:V1.0.0"
+2021-05-13 10:38:08,126 INFO  MainWindow::MainWindow(QWidget*) - "HttpClientSer res:0"
+2021-05-13 10:38:08,126 INFO  MainWindow::MainWindow(QWidget*) - "HttpServerSer res:0"
+2021-05-13 10:38:08,248 WARN   - QObject::connect: Cannot queue arguments of type 'DevStatDisplay'
+(Make sure 'DevStatDisplay' is registered using qRegisterMetaType().)
+2021-05-13 10:41:21,813 WARN   - QObject::connect: Cannot queue arguments of type 'DevStatDisplay'
+(Make sure 'DevStatDisplay' is registered using qRegisterMetaType().)
+2021-05-13 10:41:21,813 INFO  virtual void HttpServerSer::CommonRequstListen(const string&, const string&, std::__cxx11::string&) - "url /api/v1/airport/baggage/client,data {\n    \"data\": {\n    },\n    \"heartbeat\": 0,\n    \"reqId\": \"9ab37ce0f862481ebd1a7752de6d6660\"\n}\n"
+2021-05-13 10:41:21,813 INFO  virtual void HttpServerSer::CommonRequstListen(const string&, const string&, std::__cxx11::string&) - "url /api/v1/airport/baggage/client,response {\n    \"content\": {\n    },\n    \"devicestatus\": -1,\n    \"heartbeat\": 0,\n    \"msg\": \"Bad Params\",\n    \"reqId\": \"\",\n    \"status\": 400\n}\n"
+2021-05-13 10:41:45,623 INFO  virtual void HttpServerSer::CommonRequstListen(const string&, const string&, std::__cxx11::string&) - "url /api/v1/airport/baggage/client,data {\n  \"reqId\": \"3bB713ceCDfF3fB46BDFFE7a6Ed\",\n  \"heartbeat\": 0,\n  \"data\": {\n  \t\"seq\": 1,\n    \"type\": 8,\n    \"rfid\": \"1226\",\n    \"flag\": 1,\n    \"state\": -1,\n    \"datetime\": \"20200612172325567\",\n    \"weight\": \"00.00\",\n    \"mode\": -1\n  }\n}"
+2021-05-13 10:41:45,623 INFO  virtual void HttpServerSer::CommonRequstListen(const string&, const string&, std::__cxx11::string&) - "url /api/v1/airport/baggage/client,response {\n    \"content\": {\n    },\n    \"devicestatus\": -1,\n    \"heartbeat\": 0,\n    \"msg\": \"Bad Params\",\n    \"reqId\": \"\",\n    \"status\": 400\n}\n"
+2021-05-13 10:47:42,178 INFO  MainWindow::MainWindow(QWidget*) - "System Version:V1.0.0_EmptySDKV1.0.0_SVN0000_VideoSDKV2.0.0_SVN6906_/home/liuyong/EmptyBoxClient/build-EmptyBoxClient-Desktop_Qt_5_12_6_GCC_64bit-Debug"
+2021-05-13 10:47:42,178 INFO  int DetectEmptyBoxSer::Init() - "VideoProcessSer Init[0]->USB-Camera,0,640,480,15,version:2.0.0"
+2021-05-13 10:47:42,293 INFO  int VideoProcessSer::OnStartVideo() - "video decode start success，fileName-USB-Camera,0,640,480,15,ID-1"
+2021-05-13 10:47:42,293 INFO  MainWindow::MainWindow(QWidget*) - "DetectEmptyBoxSer res:0,version:V1.0.0"
+2021-05-13 10:47:42,296 INFO  MainWindow::MainWindow(QWidget*) - "HttpClientSer res:0"
+2021-05-13 10:47:42,296 INFO  MainWindow::MainWindow(QWidget*) - "HttpServerSer res:0"
+2021-05-13 10:47:42,434 WARN   - QObject::connect: Cannot queue arguments of type 'DevStatDisplay'
+(Make sure 'DevStatDisplay' is registered using qRegisterMetaType().)
