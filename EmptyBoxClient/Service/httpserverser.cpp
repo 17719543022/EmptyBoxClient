@@ -10,9 +10,8 @@
 #include <QtDebug>
 
 HttpServerSer::HttpServerSer(QObject *parent) : QObject(parent) {
-  m_listenPort =
-      Constants::SysSetting.value("httpServer/httpServerPort", 8081).toInt();
-  m_serialmessageUrl = "/api/v1/airport/baggage/serial-data";
+  m_listenPort = Constants::SysSetting.value("httpServer/httpServerPort", 8081).toInt();
+  m_serialmessageUrl = Constants::SysSetting.value("httpServer/serverPath").toString();
 }
 
 HttpServerSer::~HttpServerSer() {}
@@ -57,152 +56,157 @@ void HttpServerSer::MultipartRequstListen(
 
 void HttpServerSer::CommonRequstListen(const std::string &uri,
                                        const std::string &strRequstBody,
-                                       std::string &strResponse) {
-  DevStatDisplay dsd;
-  dsd.dType = DTNetwork;
-  dsd.dStatus = DSNormal;
-  emit DeviceStatusResult(dsd);
+                                       std::string &strResponse)
+{
+    qDebug() << QString("url %1, strRequstBody %2")
+                .arg(QString::fromStdString(uri))
+                .arg(QString::fromLocal8Bit(strRequstBody.c_str()));
 
-  QByteArray responseBytes;
-  QJsonObject responsejson;
-  responsejson.insert("status", 500);
-  responsejson.insert("reqId", "");
-  responsejson.insert("msg", tr("Internal Server Error"));
-  responsejson.insert("heartbeat", 0);
-  responsejson.insert("devicestatus", -1);
-  responsejson.insert("content", QJsonObject());
+    DevStatDisplay dsd;
+    dsd.dType = DTNetwork;
+    dsd.dStatus = DSNormal;
+    emit DeviceStatusResult(dsd);
 
-  try {
-    qInfo() << QString("url %1,data %2")
-                   .arg(QString::fromStdString(uri))
-                   .arg(QString::fromLocal8Bit(strRequstBody.c_str()));
+    QByteArray responseBytes;
+    QJsonObject responseJson;
 
-    if (m_serialmessageUrl.compare(QString::fromStdString(uri)) == 0) {
-      QByteArray data =
-          QString::fromLocal8Bit(strRequstBody.c_str()).toLocal8Bit();
-      if (data != nullptr && !data.isEmpty()) {
-        QJsonParseError jsonParseError;
-        QJsonDocument document = QJsonDocument::fromJson(data, &jsonParseError);
-        if (!document.isNull() &&
-            jsonParseError.error == QJsonParseError::NoError) {
-          SerialMessage data;
-          QJsonObject json = document.object();
-          int heartbeat = json["heartbeat"].toInt();
-          if (heartbeat == 0) {
-            responsejson["status"] = 0;
-            responsejson["reqId"] = json["reqId"].toString();
-            responsejson["msg"] = QString("Success");
-            responsejson["heartbeat"] = heartbeat;
-            responsejson["devicestatus"] = Constants::DeviceStatus;
-            responseBytes.append(QJsonDocument(responsejson).toJson());
-            strResponse = responseBytes.toStdString();
-          } else {
-            QJsonObject json1 = json["content"].toObject();
-            SerialMessageType type = SerialMessageType(json1["type"].toInt());
-            if (SMTEmptyBoxRecog == type) {
-              data.smType = type;
-              data.smRFID = json1["rfid"].toString();
-              data.smStatus = json1["status"].toInt();
-              data.smPosition = json1["position"].toInt();
-              data.smMode = json1["mode"].toInt();
-              QString timeStr = json1["time"].toString();
-              if (timeStr.isEmpty()) {
-                data.smTime = QDateTime::currentDateTime();
-              } else {
-                try {
-                  data.smTime =
-                      QDateTime::fromString(timeStr, "yyyyMMddHHmmsszzz");
-                } catch (std::exception &ex) {
-                  qCritical() << ex.what();
-                  data.smTime = QDateTime::currentDateTime();
+    try {
+        if (m_serialmessageUrl.compare(QString::fromStdString(uri)) == 0) {
+            QByteArray data = QString::fromLocal8Bit(strRequstBody.c_str()).toLocal8Bit();
+
+            if (data != nullptr && !data.isEmpty()) {
+                QJsonParseError jsonParseError;
+                QJsonDocument document = QJsonDocument::fromJson(data, &jsonParseError);
+                if (!document.isNull() && jsonParseError.error == QJsonParseError::NoError) {
+                    QJsonObject json = document.object();
+                    int heartbeat = json.value("heartbeat").toInt();
+                    QString reqId = json.value("reqId").toString();
+
+                    if (heartbeat == 0) {
+                        responseJson.insert("status", 0);
+                        responseJson.insert("reqId", reqId);
+                        responseJson.insert("msg", "Success");
+                        responseJson.insert("heartbeat", heartbeat);
+                        responseJson.insert("data", QJsonObject());
+
+                        responseBytes.append(QJsonDocument(responseJson).toJson());
+                        strResponse = responseBytes.toStdString();
+                    } else {
+                        QJsonObject dataQ = json["data"].toObject();
+                        SerialMessageType type = SerialMessageType(dataQ.value("data").toInt());
+
+                        if (SMTEmptyBoxRecog == type) {
+                            QString rfid = dataQ.value("rfid").toString();
+                            int flag = dataQ.value("flag").toInt();
+                            int mode = dataQ.value("mode").toInt();
+                            int state = dataQ.value("state").toInt();
+                            QString datetime = dataQ.value("datetime").toString().isEmpty()
+                                    ? (QDateTime::currentDateTime().toString("yyyyMMddHHmmsszzz"))
+                                    : (dataQ.value("datetime").toString());
+                            QString weight = dataQ.value("weight").toString();
+
+                            if ((rfid.isEmpty())
+                                    || (rfid.size() != 4)
+                                    || (rfid.compare(QString("FFFF")) == 0)
+                                    || (flag < 0)
+                                    || (flag > 1)
+                                    || (mode < 0)
+                                    || (mode > 1)) {
+                                responseJson.insert("status", 205);
+                                responseJson.insert("reqId", reqId);
+                                responseJson.insert("msg", "Serial Message param error");
+                                responseJson.insert("heartbeat", heartbeat);
+                                responseJson.insert("data", QJsonObject());
+
+                                responseBytes.append(QJsonDocument(responseJson).toJson());
+                                strResponse = responseBytes.toStdString();
+                            } else {
+                                int camId = flag;
+                                BoxRecogResult brResult;
+                                brResult.camId = camId;
+                                brResult.mode = mode;
+
+                                if (mode == 0) {
+                                    brResult = DetectEmptyBoxSer::instance()->SetBoxParam(camId, rfid);
+                                } else if (mode == 1) {
+                                    brResult = DetectEmptyBoxSer::instance()->AnaEmptyBox(camId, rfid);
+                                }
+
+                                responseJson.insert("status", 0);
+                                responseJson.insert("reqId", reqId);
+                                responseJson.insert("msg", "Success");
+                                responseJson.insert("heartbeat", heartbeat);
+
+                                QJsonObject dataP;
+                                dataP.insert("type", type);
+                                dataP.insert("rfid", rfid);
+                                dataP.insert("state", state);
+                                dataP.insert("flag", flag);
+                                dataP.insert("mode", mode);
+                                dataP.insert("datetime", datetime);
+                                dataP.insert("weight", weight);
+
+                                responseJson.insert("data", dataP);
+                                responseBytes.append(QJsonDocument(responseJson).toJson());
+                                strResponse = responseBytes.toStdString();
+
+                                emit BoxRecoServerResult(brResult);
+                            }
+                        } else {
+                            responseJson.insert("status", 205);
+                            responseJson.insert("reqId", reqId);
+                            responseJson.insert("msg", "Serial Message Type error");
+                            responseJson.insert("heartbeat", heartbeat);
+                            responseJson.insert("data", QJsonObject());
+
+                            responseBytes.append(QJsonDocument(responseJson).toJson());
+                            strResponse = responseBytes.toStdString();
+                        }
+                    }
+                } else {
+                    responseJson.insert("status", 204);
+                    responseJson.insert("reqId", "");
+                    responseJson.insert("msg", "No Content or Body Too Large");
+                    responseJson.insert("heartbeat", 0);
+                    responseJson.insert("data", QJsonObject());
+
+                    responseBytes.append(QJsonDocument(responseJson).toJson());
+                    strResponse = responseBytes.toStdString();
                 }
-              }
-              data.smWeight = json1["weight"].toString();
-
-              if (data.smRFID.isEmpty() || data.smRFID.size() != 4 ||
-                  data.smRFID.compare(QString("FFFF")) == 0 ||
-                  data.smPosition < 0 || data.smPosition > 1 ||
-                  data.smMode < 0 || data.smMode > 1) {
-                responsejson["status"] = 205;
-                responsejson["reqId"] = QString("");
-                responsejson["msg"] = QString("Serial Message param error");
-                responseBytes.append(QJsonDocument(responsejson).toJson());
-                strResponse = responseBytes.toStdString();
-              } else {
-                QString rfid = data.smRFID;
-                int camId = data.smPosition;
-                int mode = data.smMode;
-                BoxRecogResult brResult;
-                brResult.camId = camId;
-                brResult.mode = mode;
-                if (mode == 0) {
-                  brResult =
-                      DetectEmptyBoxSer::instance()->SetBoxParam(camId, rfid);
-                } else if (mode == 1) {
-                  brResult =
-                      DetectEmptyBoxSer::instance()->AnaEmptyBox(camId, rfid);
-                }
-
-                data.smStatus = brResult.result;
-                data.smTime = QDateTime::currentDateTime();
-
-                responsejson["status"] = 0;
-                responsejson["reqId"] = json["reqId"].toString();
-                responsejson["msg"] = QString("Success");
-                responsejson["heartbeat"] = heartbeat;
-                responsejson["devicestatus"] = Constants::DeviceStatus;
-                QJsonObject responsejson1;
-                responsejson1.insert("type", data.smType);
-                responsejson1.insert("rfid", data.smRFID);
-                responsejson1.insert("status", data.smStatus);
-                responsejson1.insert("position", data.smPosition);
-                responsejson1.insert("mode", data.smMode);
-                responsejson1.insert("stime",
-                                     data.smTime.toString("yyyyMMddHHmmsszzz"));
-                responsejson1.insert("weight", data.smWeight);
-                responsejson["content"] = responsejson1;
-                responseBytes.append(QJsonDocument(responsejson).toJson());
-                strResponse = responseBytes.toStdString();
-
-                emit BoxRecoServerResult(brResult);
-              }
             } else {
-              responsejson["status"] = 205;
-              responsejson["reqId"] = QString("");
-              responsejson["msg"] = QString("Serial Message Type error");
-              responseBytes.append(QJsonDocument(responsejson).toJson());
-              strResponse = responseBytes.toStdString();
+                responseJson.insert("status", 204);
+                responseJson.insert("reqId", "");
+                responseJson.insert("msg", "No Content or Body Too Large");
+                responseJson.insert("heartbeat", 0);
+                responseJson.insert("data", QJsonObject());
+
+                responseBytes.append(QJsonDocument(responseJson).toJson());
+                strResponse = responseBytes.toStdString();
             }
-          }
         } else {
-          responsejson["status"] = 204;
-          responsejson["reqId"] = QString("");
-          responsejson["msg"] = QString("No Content or Body Too Large");
-          responseBytes.append(QJsonDocument(responsejson).toJson());
-          strResponse = responseBytes.toStdString();
+            responseJson.insert("status", 400);
+            responseJson.insert("reqId", "");
+            responseJson.insert("msg", "Bad Params");
+            responseJson.insert("heartbeat", 0);
+            responseJson.insert("data", QJsonObject());
+
+            responseBytes.append(QJsonDocument(responseJson).toJson());
+            strResponse = responseBytes.toStdString();
         }
 
-      } else {
-        responsejson["status"] = 204;
-        responsejson["reqId"] = QString("");
-        responsejson["msg"] = QString("No Content or Body Too Large");
-        responseBytes.append(QJsonDocument(responsejson).toJson());
-        strResponse = responseBytes.toStdString();
-      }
-    } else {
-      responsejson["status"] = 400;
-      responsejson["reqId"] = QString("");
-      responsejson["msg"] = QString("Bad Params");
-      responseBytes.append(QJsonDocument(responsejson).toJson());
-      strResponse = responseBytes.toStdString();
-    }
+        qDebug() << QString("url %1, strResponse %2")
+                    .arg(QString::fromStdString(uri))
+                    .arg(QString::fromLocal8Bit(strResponse.c_str()));
+        } catch (std::exception &ex) {
+            qDebug() << ex.what();
 
-    qInfo() << QString("url %1,response %2")
-                   .arg(QString::fromStdString(uri))
-                   .arg(QString::fromLocal8Bit(strResponse.c_str()));
-  } catch (std::exception &ex) {
-    qCritical() << ex.what();
-    responseBytes.append(QJsonDocument(responsejson).toJson());
-    strResponse = responseBytes.toStdString();
-  }
+            responseJson.insert("status", 500);
+            responseJson.insert("reqId", "");
+            responseJson.insert("msg", "Internal Server Error");
+            responseJson.insert("heartbeat", 0);
+            responseJson.insert("data", QJsonObject());
+
+            responseBytes.append(QJsonDocument(responseJson).toJson());
+            strResponse = responseBytes.toStdString();
+        }
 }

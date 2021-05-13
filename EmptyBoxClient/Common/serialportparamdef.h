@@ -6,14 +6,14 @@
 //参数定义
 //串口消息类型相关参数
 enum SerialMessageType{
-    SMTStatusExchange=0,        //双方状态交换
-    SMTFaceBind,                //准备位人脸绑定
-    SMTBoxArrivalXRay,          //行李框到达X光机传送带
-    SMTBoxLeaveXRay,            //行李框离开X光机传送带
-    SMTXRayTransporterStatus,   //X光机传送带状态
-    SMTRecheckBoxAssignment,    //复查框指定
-    SMTEmptyBoxRecog,           //空框识别
-    SMTRecoveryBoxPreparation,  //回框准备
+    SMTStatusExchange = 1,          //双方状态交换
+    SMTFaceBind = 2,                //准备位人脸绑定
+    SMTBoxArrivalXRay = 4,          //行李框到达X光机传送带
+    SMTBoxLeaveXRay = 5,            //行李框离开X光机传送带
+    SMTXRayTransporterStatus = 6,   //X光机传送带状态
+    SMTRecheckBoxAssignment = 7,    //复查框指定
+    SMTEmptyBoxRecog = 8,           //空框识别
+    SMTRecoveryBoxPreparation = 9,  //回框准备
 };
 
 /*闸机消息结构体*/
