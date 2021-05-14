@@ -93,7 +93,7 @@ void HttpServerSer::CommonRequstListen(const std::string &uri,
                         strResponse = responseBytes.toStdString();
                     } else {
                         QJsonObject dataQ = json["data"].toObject();
-                        SerialMessageType type = SerialMessageType(dataQ.value("data").toInt());
+                        SerialMessageType type = SerialMessageType(dataQ.value("type").toInt());
 
                         if (SMTEmptyBoxRecog == type) {
                             QString rfid = dataQ.value("rfid").toString();
@@ -140,7 +140,7 @@ void HttpServerSer::CommonRequstListen(const std::string &uri,
                                 QJsonObject dataP;
                                 dataP.insert("type", type);
                                 dataP.insert("rfid", rfid);
-                                dataP.insert("state", state);
+                                dataP.insert("state", brResult.result);
                                 dataP.insert("flag", flag);
                                 dataP.insert("mode", mode);
                                 dataP.insert("datetime", datetime);
